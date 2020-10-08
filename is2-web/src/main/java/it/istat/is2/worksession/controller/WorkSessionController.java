@@ -23,10 +23,11 @@
  */
 package it.istat.is2.worksession.controller;
 
-import it.istat.is2.app.bean.BusinessFunctionBean;
-
+import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,27 +43,25 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import it.istat.is2.app.bean.BusinessFunctionBean;
 import it.istat.is2.app.bean.ElaborazioneFormBean;
 import it.istat.is2.app.bean.NotificationMessage;
 import it.istat.is2.app.bean.SessionBean;
-import it.istat.is2.app.domain.Log;
 import it.istat.is2.app.service.DataProcessingService;
 import it.istat.is2.app.service.LogService;
 import it.istat.is2.app.service.NotificationService;
 import it.istat.is2.app.util.IS2Const;
+import it.istat.is2.commons.dto.LogDTO;
 import it.istat.is2.dataset.domain.DatasetFile;
 import it.istat.is2.rule.domain.Ruleset;
-import it.istat.is2.workflow.domain.DataProcessing;
-import it.istat.is2.workflow.domain.ViewDataType;
 import it.istat.is2.workflow.domain.BusinessFunction;
 import it.istat.is2.workflow.domain.BusinessProcess;
+import it.istat.is2.workflow.domain.DataProcessing;
+import it.istat.is2.workflow.domain.ViewDataType;
 import it.istat.is2.workflow.service.BusinessFunctionService;
 import it.istat.is2.workflow.service.BusinessProcessService;
 import it.istat.is2.worksession.domain.WorkSession;
 import it.istat.is2.worksession.service.WorkSessionService;
-
-import java.security.Principal;
-import java.util.ArrayList;
 
 @Controller
 public class WorkSessionController {
@@ -142,7 +141,7 @@ public class WorkSessionController {
 
         // notificationService.removeAllMessages();
 
-        List<Log> logs = logService.findByIdSessione(id);
+        List<LogDTO> logs = logService.findByIdSessione(id);
 
         WorkSession workSession = workSessionService.getSessione(id);
         SessionBean sessionBean;
@@ -210,7 +209,7 @@ public class WorkSessionController {
             notificationService.addInfoMessage(
                     messages.getMessage("creation.process.success", null, LocaleContextHolder.getLocale()));
 
-            logService.save("Elaborazione " + elaborazione.getName() + " creata con successo");
+            logService.save("Elaborazione " + elaborazione.getName() + " creata con successo",workSession.getId());
 
         } catch (Exception e) {
 

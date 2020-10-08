@@ -8,15 +8,27 @@
 		<artifactId>is2-framework</artifactId>
 		<groupId>it.istat.is2.framework</groupId>
 		<version>1.0</version>
+		<relativePath>../pom.xml</relativePath>
 	</parent>
 
 	<groupId>it.istat.is2.commons</groupId>
 	<artifactId>is2-commons</artifactId>
+	<name>IS2 Commons</name>
+	<description>Istat Statistical Service Commons</description>
 
 	<packaging>jar</packaging>
-	
-	<properties>
-		<java.version>11</java.version>
-	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>javax.validation</groupId>
+			<artifactId>validation-api</artifactId>
+		</dependency>
+
+	</dependencies>
+
 
 </project>

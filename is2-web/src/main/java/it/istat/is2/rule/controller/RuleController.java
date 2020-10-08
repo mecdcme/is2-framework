@@ -27,11 +27,11 @@ import it.istat.is2.app.bean.InputFormBean;
 import it.istat.is2.app.bean.NewRuleFormBean;
 import it.istat.is2.app.bean.NewRulesetFormBean;
 import it.istat.is2.app.bean.SessionBean;
-import it.istat.is2.app.domain.Log;
 import it.istat.is2.app.service.LogService;
 import it.istat.is2.app.service.NotificationService;
 import it.istat.is2.app.util.FileHandler;
 import it.istat.is2.app.util.IS2Const;
+import it.istat.is2.commons.dto.LogDTO;
 
 import static it.istat.is2.app.util.IS2Const.OUTPUT_R;
 
@@ -127,7 +127,8 @@ public class RuleController {
             try {
                 int rules = ruleService.loadRules(fileRules, idsessione, etichetta, labelCodeRule, idclassificazione,
                         separatore, nomeFile, descrizione, skipFirstLine);
-                logService.save("Caricate " + rules + " regole");
+                logService.save("Caricate " + rules + " regole",Long.parseLong(idsessione)
+                		);
                 notificationService.addInfoMessage(
                         messages.getMessage("generic.save.success", null, LocaleContextHolder.getLocale()));
                 SessionBean sessionBean = (SessionBean) httpSession.getAttribute(IS2Const.SESSION_BEAN);
@@ -148,8 +149,8 @@ public class RuleController {
 
         notificationService.removeAllMessages();
 
-        List<Log> logs = logService.findByIdSessione(Long.parseLong(form.getIdsessione()));
-        List<Log> rlogs = logService.findByIdSessioneAndTipo(Long.parseLong(form.getIdsessione()), OUTPUT_R);
+        List<LogDTO> logs = logService.findByIdSessione(Long.parseLong(form.getIdsessione()));
+        List<LogDTO> rlogs = logService.findByIdSessioneAndTipo(Long.parseLong(form.getIdsessione()), OUTPUT_R);
 
         List<RuleCls> ruleClsList;
 
@@ -328,8 +329,8 @@ public class RuleController {
     @GetMapping(value = "/viewRuleset/{id}")
     public String viewRuleset(HttpSession session, Model model, @PathVariable("id") Long id) {
 
-        List<Log> logs = logService.findByIdSessione(id);
-        List<Log> rlogs = logService.findByIdSessioneAndTipo(id, OUTPUT_R);
+        List<LogDTO> logs = logService.findByIdSessione(id);
+        List<LogDTO> rlogs = logService.findByIdSessioneAndTipo(id, OUTPUT_R);
 
         WorkSession sessionelv = workSessionService.getSessione(id);
         List<DatasetFile> listaDSFile = new ArrayList<>();
@@ -393,8 +394,8 @@ public class RuleController {
 
         session.removeAttribute("dfile");
 
-        List<Log> logs = logService.findByIdSessione();
-        List<Log> rlogs = logService.findByIdSessioneAndTipo(OUTPUT_R);
+        List<LogDTO> logs = logService.findByIdSessione(-1L);
+        List<LogDTO> rlogs = logService.findByIdSessioneAndTipo(-1L,OUTPUT_R);
 
         Ruleset ruleset = ruleService.findRulesetById(idfile);
         List<Rule> rules = ruleService.findRules(ruleset);
@@ -435,8 +436,8 @@ public class RuleController {
         } catch (Exception e) {
             // notificationService.addErrorMessage("Error: " + e.getMessage());
         }
-        List<Log> logs = logService.findByIdSessione();
-        List<Log> rlogs = logService.findByIdSessioneAndTipo(OUTPUT_R);
+        List<LogDTO> logs = logService.findByIdSessione(-1L);
+        List<LogDTO> rlogs = logService.findByIdSessioneAndTipo(-1L,OUTPUT_R);
 
         List<Rule> rules = ruleService.findRules(ruleset);
 
@@ -473,7 +474,7 @@ public class RuleController {
 
         ruleService.deleteRuleset(idRuleset);
 
-        logService.save("Set di regole con id " + idRuleset + " eliminato con successo");
+        logService.save("Set di regole con id " + idRuleset + " eliminato con successo",idSessione);
         notificationService.addInfoMessage("Eliminazione avvenuta con successo");
 
         return "redirect:/rule/viewRuleset/" + idSessione;

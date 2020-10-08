@@ -23,114 +23,68 @@
  */
 package it.istat.is2.app.service;
 
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.Arrays;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.servlet.http.HttpSession;
-
-import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
-import it.istat.is2.app.bean.SessionBean;
-import it.istat.is2.app.dao.LogDao;
-import it.istat.is2.app.domain.Log;
 import it.istat.is2.app.util.IS2Const;
-import it.istat.is2.worksession.domain.WorkSession;
+import it.istat.is2.commons.dto.LogCreateRequest;
+import it.istat.is2.commons.dto.LogDTO;
 
 @Service
-@Transactional
 public class LogService {
+	
+@Autowired
+	protected RestTemplate restTemplate;
+	// ​/log
+	@Value("${services.log_url}")
+	protected String logServiceUrl;
 
-    @Autowired
-    private LogDao logDao;
-    @Autowired
-    private HttpSession httpSession;
-    @Autowired
-    protected EntityManager em;
 
-    public List<Log> findAll() {
-        return logDao.findAll();
-    }
+	public List<LogDTO> findAll() {
+		ResponseEntity<LogDTO[]> response = this.restTemplate.getForEntity(logServiceUrl, LogDTO[].class);
+		return Arrays.asList(response.getBody());
 
-    public List<Log> findByIdSessione(Long idSessione) {
+	}
 
-        return logDao.findByWorkSessionOrderByIdAsc(new WorkSession(idSessione));
-    }
+	public List<LogDTO> findByIdSessione(Long idSession) {
+		ResponseEntity<LogDTO[]> response = restTemplate.getForEntity(logServiceUrl + "/{idSession}", LogDTO[].class,
+				idSession);
+		return Arrays.asList(response.getBody());
 
-    public List<Log> findByIdSessioneAndTipo(Long idSessione, String tipo) {
-        return logDao.findByWorkSessionAndTypeOrderByIdAsc(new WorkSession(idSessione), tipo);
-    }
+	}
 
-    public List<Log> findByIdSessione() {
-        SessionBean sessionBean = (SessionBean) httpSession.getAttribute(IS2Const.SESSION_BEAN);
-        List<Log> logs;
-        if (sessionBean != null) {
-            logs = logDao.findByWorkSessionAndTypeOrderByIdDesc(new WorkSession(sessionBean.getId()),
-                    IS2Const.OUTPUT_DEFAULT);
-        } else {
-            logs = new ArrayList<>();
-        }
-        return logs;
-    }
+	public List<LogDTO> findByIdSessioneAndTipo(Long idSession, String idType) {
+		ResponseEntity<LogDTO[]> response = restTemplate.getForEntity(logServiceUrl + "/{idSession}/{idType}",
+				LogDTO[].class, idSession, idType);
+		return Arrays.asList(response.getBody());
+	}
 
-    public List<Log> findByIdSessioneAndTipo(String tipo) {
-        SessionBean sessionBean = (SessionBean) httpSession.getAttribute(IS2Const.SESSION_BEAN);
-        List<Log> logs;
-        if (sessionBean != null) {
-            logs = logDao.findByWorkSessionAndTypeOrderByIdAsc(new WorkSession(sessionBean.getId()), tipo);
-        } else {
-            logs = new ArrayList<>();
-        }
-        return logs;
-    }
+	public void deleteByIdSessione(Long idSession) {
 
-    public void deleteByIdSessione(Long idSessione) {
-        logDao.deleteByWorkSession(idSessione);
-    }
+		restTemplate.delete(logServiceUrl + "/{idSession}", idSession);
+	}
 
-    public int deleteByIdSessioneAndTipo(Long idSessione, String tipo) {
-        return logDao.deleteByWorkSessionAndType(idSessione, tipo);
-    }
+	public void deleteByIdSessioneAndTipo(Long idSession, String idType) {
+		restTemplate.delete(logServiceUrl + "/{idSession}/{idType}", idSession, idType);
+	}
 
-    public void save(String msg) {
+	public void save(String msg, Long idSession) {
 
-        SessionBean sessionBean = (SessionBean) httpSession.getAttribute(IS2Const.SESSION_BEAN);
-        Session session = em.unwrap(Session.class);
-        Log log = new Log();
-        if (sessionBean != null && sessionBean.getId() != null) {
-            log.setWorkSession(new WorkSession(sessionBean.getId()));
-        } else {
-            log.setWorkSession(new WorkSession());
-        }
-        log.setMsg(msg);
-        log.setType(IS2Const.OUTPUT_DEFAULT);
-        log.setMsgTime(new Date());
+		save(msg, idSession, IS2Const.OUTPUT_DEFAULT);
+	}
 
-        this.logDao.save(log);
-        session.flush();
-        session.clear();
-
-    }
-
-    public void save(String msg, String tipo) {
-
-        SessionBean sessionBean = (SessionBean) httpSession.getAttribute(IS2Const.SESSION_BEAN);
-
-        Log log = new Log();
-        if (sessionBean != null) {
-            log.setWorkSession(new WorkSession(sessionBean.getId()));
-        } else {
-            log.setWorkSession(null);
-        }
-        log.setMsg(msg);
-        log.setType(tipo);
-        log.setMsgTime(new Date());
-
-        logDao.save(log);
-    }
+	public void save(String msg, Long idSession, String type) {
+		LogCreateRequest log = new LogCreateRequest();
+		log.setLogContent(msg);
+		log.setType(type);
+		log.setSessionId(idSession);
+		restTemplate.postForObject(logServiceUrl, log, Boolean.class);
+	}
 
 }

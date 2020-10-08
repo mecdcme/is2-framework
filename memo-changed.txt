@@ -1,0 +1,2 @@
+Log service
+	worklfow/home.html e batch.js modificato function esegui()

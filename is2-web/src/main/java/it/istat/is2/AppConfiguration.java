@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.web.servlet.LocaleResolver;
@@ -46,6 +47,12 @@ import it.istat.is2.app.dao.SqlGenericDao;
 
 @Configuration
 public class AppConfiguration implements WebMvcConfigurer {
+	
+	 @Bean
+	   public RestTemplate restTemplate() {
+	      return new RestTemplate();
+	   }
+
 
     @Bean
     public LocaleChangeInterceptor localeChangeInterceptor() {

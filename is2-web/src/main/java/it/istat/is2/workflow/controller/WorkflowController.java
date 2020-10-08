@@ -52,32 +52,33 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import it.istat.is2.dataset.domain.DatasetColumn;
-import it.istat.is2.app.bean.MappingVarsFormBean;
-import it.istat.is2.app.bean.BusinessProcessParentBean;
+
 import it.istat.is2.app.bean.AssociazioneVarRoleBean;
 import it.istat.is2.app.bean.BusinessProcessBean;
+import it.istat.is2.app.bean.BusinessProcessParentBean;
+import it.istat.is2.app.bean.MappingVarsFormBean;
 import it.istat.is2.app.bean.ProcessStepBean;
 import it.istat.is2.app.bean.SessionBean;
-import it.istat.is2.app.domain.Log;
 import it.istat.is2.app.service.DataProcessingService;
 import it.istat.is2.app.service.LogService;
 import it.istat.is2.app.service.NotificationService;
 import it.istat.is2.app.util.IS2Const;
+import it.istat.is2.commons.dto.LogDTO;
+import it.istat.is2.dataset.domain.DatasetColumn;
 import it.istat.is2.dataset.domain.DatasetFile;
 import it.istat.is2.dataset.service.DatasetService;
 import it.istat.is2.rule.domain.Ruleset;
 import it.istat.is2.rule.service.RuleService;
-import it.istat.is2.workflow.domain.DataProcessing;
-import it.istat.is2.workflow.domain.DataTypeCls;
+import it.istat.is2.workflow.domain.AppRole;
 import it.istat.is2.workflow.domain.BusinessFunction;
 import it.istat.is2.workflow.domain.BusinessProcess;
+import it.istat.is2.workflow.domain.DataProcessing;
+import it.istat.is2.workflow.domain.DataTypeCls;
 import it.istat.is2.workflow.domain.ProcessStep;
 import it.istat.is2.workflow.domain.StepInstanceSignature;
-import it.istat.is2.workflow.domain.AppRole;
-import it.istat.is2.workflow.domain.ViewDataType;
 import it.istat.is2.workflow.domain.StepRuntime;
 import it.istat.is2.workflow.domain.TypeIO;
+import it.istat.is2.workflow.domain.ViewDataType;
 import it.istat.is2.workflow.domain.Workset;
 import it.istat.is2.workflow.service.AppRoleService;
 import it.istat.is2.workflow.service.StepRuntimeService;
@@ -146,7 +147,7 @@ public class WorkflowController {
         model.addAttribute("dataProcessing", dataProcessing);
         model.addAttribute(IS2Const.LIST_BUSINESS_PROCESS, listaBp);
 
-        List<Log> logs = logService.findByIdSessione(sessionBean.getId());
+        List<LogDTO> logs = logService.findByIdSessione(sessionBean.getId());
         model.addAttribute("logs", logs);
 
         Map<Long, List<String>> paramsMissing = workflowService
@@ -452,7 +453,7 @@ public class WorkflowController {
         List<WorkSession> listasessioni = workSessionService.getSessioneList(user.getName());
         model.addAttribute("listasessioni", listasessioni);
 
-        logService.save("Elaborazione " + dataProcessingId + " Eliminata con successo");
+        logService.save("Elaborazione " + dataProcessingId + " Eliminata con successo",idsessione);
 
         return "redirect:/sessione/apri/" + idsessione;
     }

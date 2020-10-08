@@ -51,7 +51,7 @@ public class EngineValidate {
 
     public void connect() throws RserveException {
 
-        logService.save("Connecting to R server...");
+        logService.save("Connecting to R server...",0l);
 
         // Create a connection to Rserve instance running on default port 6311
         if (serverRPort == null || serverRPort == 0) {
@@ -64,11 +64,11 @@ public class EngineValidate {
             connection = new RConnection(serverRHost, serverRPort);
         }
 
-        logService.save("Successfully connected!");
+        logService.save("Successfully connected!",0l);
 
         connection.eval("setwd('" + pathR + "')");
         connection.eval("source('" + VALIDATE_FOLDER + "/" + VALIDATE_SRC + "')");
-        logService.save("Validate R script loaded");
+        logService.save("Validate R script loaded",0l);
     }
 
     public Map<String, List<String>> detectInfeasibleRules(String[] input, String[] inputNames) throws REXPMismatchException, REngineException {
@@ -90,10 +90,10 @@ public class EngineValidate {
         ret.put("validatesRules", Arrays.asList(validates));
 
         for (int i = 0; i < rlog.length; i++) {
-            logService.save(rlog[i], OUTPUT_R);
+            logService.save(rlog[i],0l, OUTPUT_R);
         }
 
-        logService.save("Script completed!");
+        logService.save("Script completed!",0l);
 
         return ret;
     }
@@ -102,7 +102,7 @@ public class EngineValidate {
         if (connection != null && connection.isConnected()) {
             connection.close();
         }
-        logService.save("Connection to R server closed!");
+        logService.save("Connection to R server closed!",0l);
     }
 
 
@@ -124,10 +124,10 @@ public class EngineValidate {
         }
         rlog = out.at("log").asStrings();
         for (int i = 0; i < rlog.length; i++) {
-            logService.save(rlog[i], OUTPUT_R);
+            logService.save(rlog[i],0l, OUTPUT_R);
         }
 
-        logService.save("Script completed!");
+        logService.save("Script completed!",0l);
 
         return ret;
     }

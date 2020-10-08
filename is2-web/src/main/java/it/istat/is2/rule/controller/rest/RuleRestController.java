@@ -23,9 +23,9 @@
  */
 package it.istat.is2.rule.controller.rest;
 
-import it.istat.is2.app.domain.Log;
 import it.istat.is2.app.service.LogService;
 import it.istat.is2.app.service.NotificationService;
+import it.istat.is2.commons.dto.LogDTO;
 import it.istat.is2.rule.domain.Rule;
 import it.istat.is2.rule.forms.RuleCreateForm;
 import it.istat.is2.rule.service.RuleService;
@@ -89,7 +89,7 @@ public class RuleRestController {
             //notificationService.addErrorMessage("Error: " + e.getMessage());
         }
 
-        List<Log> rlogs = logService.findByIdSessioneAndTipo(OUTPUT_R);
+        List<LogDTO> rlogs = logService.findByIdSessioneAndTipo(-1L,OUTPUT_R);
         resulVal.put("rlogs", rlogs);
         resulVal.put("rfunction", rfunction);
 

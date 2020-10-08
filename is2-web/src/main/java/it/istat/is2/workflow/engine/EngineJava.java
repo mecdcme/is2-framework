@@ -103,9 +103,9 @@ public class EngineJava implements EngineService {
         String fname = stepInstance.getMethod();
         String fnameClassName = stepInstance.getAppService().getSource();
         Class<?> fnameClass = Class.forName(fnameClassName);
-        Method method = ReflectionUtils.findMethod(fnameClass, fname, Long.class, Map.class, Map.class, Map.class);
+        Method method = ReflectionUtils.findMethod(fnameClass, fname, Long.class, Long.class, Map.class, Map.class, Map.class);
         Object instance = context.getBean(fnameClass);
-        resultOut = (Map<String, Map<?, ?>>) method.invoke(instance, dataProcessing.getId(), ruoliVariabileNome,
+        resultOut = (Map<String, Map<?, ?>>) method.invoke(instance, dataProcessing.getId(), dataProcessing.getWorkSession().getId(),ruoliVariabileNome,
                 worksetInput, parametriMap);
         worksetOut = (Map<String, Map<?, ?>>) resultOut.get(WORKSET_OUT);
         parametriOutput = (Map<String, Map<?, ?>>) resultOut.get(PARAMETERS_OUT);

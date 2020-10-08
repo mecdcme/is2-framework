@@ -49,11 +49,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import it.istat.is2.app.bean.InputFormBean;
 import it.istat.is2.app.bean.SessionBean;
-import it.istat.is2.app.domain.Log;
+
 import it.istat.is2.app.service.LogService;
 import it.istat.is2.app.service.NotificationService;
 import it.istat.is2.app.util.FileHandler;
 import it.istat.is2.app.util.IS2Const;
+import it.istat.is2.commons.dto.LogDTO;
 import it.istat.is2.dataset.domain.DatasetColumn;
 import it.istat.is2.dataset.domain.DatasetFile;
 import it.istat.is2.dataset.domain.StatisticalVariableCls;
@@ -133,7 +134,7 @@ public class DatasetController {
     @GetMapping(value = "/sessione/mostradataset/{id}")
     public String viewDataset(HttpSession session, Model model, @PathVariable("id") Long id) {
 
-        List<Log> logs = logService.findByIdSessione(id);
+        List<LogDTO> logs = logService.findByIdSessione(id);
 
         WorkSession sessionelv = workSessionService.getSessione(id);
         if (sessionelv.getDatasetFiles() != null && !sessionelv.getDatasetFiles().isEmpty()) {
@@ -223,7 +224,7 @@ public class DatasetController {
         try {
             datasetService.save(campiL, valoriHeaderNum, labelFile, tipoDato, separatore, form.getDescrizione(),
                     idsessione);
-            logService.save("File " + labelFile + " salvato con successo");
+            logService.save("File " + labelFile + " salvato con successo",Long.parseLong(idsessione));
             notificationService
                     .addInfoMessage(messages.getMessage("generic.save.success", null, LocaleContextHolder.getLocale()));
             SessionBean sessionBean = (SessionBean) session.getAttribute(IS2Const.SESSION_BEAN);
@@ -246,7 +247,7 @@ public class DatasetController {
 
         WorkSession sessionelv = workSessionService.getSessioneByIdFile(idDataset);
         datasetService.deleteDataset(idDataset);
-        logService.save("File " + idDataset + " eliminato con successo");
+        logService.save("File " + idDataset + " eliminato con successo",sessionelv.getId());
         notificationService.addInfoMessage("Eliminazione avvenuta con successo");
 
         return "redirect:/sessione/mostradataset/" + sessionelv.getId();
@@ -259,7 +260,7 @@ public class DatasetController {
         notificationService.removeAllMessages();
         try {
             datasetService.loadDatasetFromTable(idsessione, dbschema, tablename, fields);
-            logService.save("Table " + tablename + " loaded");
+            logService.save("Table " + tablename + " loaded",Long.parseLong(idsessione));
             notificationService.addInfoMessage("Table " + tablename + " loaded");
         } catch (Exception e) {
             notificationService.addErrorMessage("Error: " + e.getMessage());

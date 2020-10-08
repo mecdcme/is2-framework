@@ -89,7 +89,7 @@ public class EngineREnjin extends EngineR implements EngineService {
         this.stepInstance = stepInstance;
         this.fileScriptR = stepInstance.getAppService().getSource();
 
-        logService.save("Engine REnjin Init for " + stepInstance.getMethod());
+        logService.save("Engine REnjin Init for " + stepInstance.getMethod(),dataProcessing.getWorkSession().getId());
 
         prepareEnv();
         createConnection();
@@ -320,10 +320,10 @@ public class EngineREnjin extends EngineR implements EngineService {
 
         while (multiTokenizer.hasMoreTokens()) {
 
-            logService.save(multiTokenizer.nextToken(), IS2Const.OUTPUT_R);
+            logService.save(multiTokenizer.nextToken(),dataProcessing.getWorkSession().getId(), IS2Const.OUTPUT_R);
         }
 
-        logService.save("Script completed!");
+        logService.save("Script completed!",dataProcessing.getWorkSession().getId());
     }
 
     public void getRecursiveOutput(Map<String, Object> genericHashMap, ListVector listR) throws ScriptException {

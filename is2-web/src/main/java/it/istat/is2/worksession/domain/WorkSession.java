@@ -39,7 +39,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import it.istat.is2.app.domain.Log;
+
 import it.istat.is2.app.domain.User;
 import it.istat.is2.dataset.domain.DatasetFile;
 import it.istat.is2.rule.domain.Ruleset;
@@ -85,9 +85,6 @@ public class WorkSession implements Serializable {
 
     @OneToMany(mappedBy = "workSession", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Ruleset> ruleSets;
-
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "workSession", orphanRemoval = true)
-    private List<Log> logs;
 
 
     public WorkSession(Long id) {

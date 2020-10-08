@@ -13,12 +13,12 @@ $(document).ready(function() {
 	pollJobs();
 });
 
-function esegui(idElaborazione, idProcesso) {
+function esegui(idElaborazione,idWSession, idProcesso) {
 	$('#' + idProcesso).text("STARTING...");
 	$('#esegui_' + idProcesso).addClass("not-active");
 	$('#output_' + idProcesso).addClass("not-active");
 	$.ajax({
-		url : _ctx + '/rest/batch/' + idElaborazione + '/' + idProcesso,
+		url : _ctx + '/rest/batch/'+ idWSession + '/' + idElaborazione + '/' + idProcesso,
 		type : "GET",
 		success : function(data) {
 			parseReturn(data);

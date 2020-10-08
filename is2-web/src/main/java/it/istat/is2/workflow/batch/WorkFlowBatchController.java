@@ -25,11 +25,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import it.istat.is2.app.bean.SessionBean;
-import it.istat.is2.app.domain.Log;
+
 
 import it.istat.is2.app.service.LogService;
 import it.istat.is2.app.service.NotificationService;
 import it.istat.is2.app.util.IS2Const;
+import it.istat.is2.commons.dto.LogDTO;
 
 @RequestMapping("/rest")
 @RestController
@@ -54,19 +55,19 @@ public class WorkFlowBatchController {
     @Autowired
     JobRepository jobRepository;
 
-    @RequestMapping(value = "/batch/{idElaborazione}/{idBProc}", method = RequestMethod.GET)
-    public ResponseEntity<?> doBatch(HttpSession session, Model model,
+    @RequestMapping(value = "/batch/{idSession}/{idElaborazione}/{idBProc}", method = RequestMethod.GET)
+    public ResponseEntity<?> doBatch(HttpSession session, Model model, @PathVariable("idSession") Long idSession,
                                      @PathVariable("idElaborazione") Long idElaborazione, @PathVariable("idBProc") Long idBProc)
             throws NoSuchJobException {
         notificationService.removeAllMessages();
-        JobParameters jobParameters = new JobParametersBuilder().addLong("idElaborazione", idElaborazione)
+        JobParameters jobParameters = new JobParametersBuilder().addLong("idSession", idSession).addLong("idElaborazione", idElaborazione)
                 .addLong("idBProc", idBProc).addLong("time", System.currentTimeMillis()).toJobParameters();
         try {
             jobLauncher.run(doBusinessProc, jobParameters);
             notificationService.addInfoMessage(
                     messages.getMessage("generic.process.start", null, LocaleContextHolder.getLocale()));
         } catch (Exception e) {
-            logService.save(e.getMessage());
+            logService.save(e.getMessage(),idSession);
         }
 
         return ResponseEntity.ok(notificationService.getNotificationMessages());
@@ -75,7 +76,7 @@ public class WorkFlowBatchController {
     @GetMapping("/batch/logs")
     public ResponseEntity<?> getLogs(HttpSession httpSession, Model model) {
         SessionBean sessionBean = (SessionBean) httpSession.getAttribute(IS2Const.SESSION_BEAN);
-        List<Log> logs;
+        List<LogDTO> logs;
         if (sessionBean != null) {
             logs = logService.findByIdSessione(sessionBean.getId());
         } else {

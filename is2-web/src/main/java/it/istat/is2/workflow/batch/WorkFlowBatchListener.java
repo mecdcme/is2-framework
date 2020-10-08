@@ -35,7 +35,7 @@ public class WorkFlowBatchListener extends JobExecutionListenerSupport {
         try {
             this.save(jobExecution, sessionBean, params, msg);
         } catch (Exception e) {
-            logService.save(e.getMessage());
+            logService.save(e.getMessage(), params.getLong("idSession") );
         }
     }
 
@@ -53,7 +53,7 @@ public class WorkFlowBatchListener extends JobExecutionListenerSupport {
             msg = "Job for elaborazione[" + params.getLong("idElaborazione") + "] and processo["
                     + params.getLong("idBProc") + "] " + BatchStatus.ABANDONED.name();
         }
-        logService.save(msg);
+        logService.save(msg, params.getLong("idSession") );
     }
 
     private Batch save(JobExecution jobExecution, SessionBean sessionBean, JobParameters params,
@@ -66,10 +66,10 @@ public class WorkFlowBatchListener extends JobExecutionListenerSupport {
         } else {
             batch.setIdSessione(Long.valueOf(-1));
         }
-        logService.save(msg);
+        logService.save(msg,batch.getIdSessione());
         if (!jobExecution.getAllFailureExceptions().isEmpty()) {
             for (int i = 0; i < jobExecution.getAllFailureExceptions().size(); i++) {
-                logService.save("ERROR: " + jobExecution.getAllFailureExceptions().get(i));
+                logService.save("ERROR: " + jobExecution.getAllFailureExceptions().get(i),batch.getIdSessione());
             }
         }
         return workFlowBatchService.save(batch);

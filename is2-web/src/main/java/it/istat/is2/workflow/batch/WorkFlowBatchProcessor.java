@@ -77,7 +77,7 @@ public class WorkFlowBatchProcessor implements ItemReader<DataProcessing> {
             engine.processOutput();
         } catch (Exception e) {
             Logger.getRootLogger().error(e.getMessage());
-            logService.save("Error: " + e.getMessage());
+            logService.save("Error: " + e.getMessage(),elaborazione.getWorkSession().getId());
             notificationService.addErrorMessage("Error: " + e.getMessage());
             throw (e);
         } finally {

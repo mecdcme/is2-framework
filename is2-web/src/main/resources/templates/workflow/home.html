@@ -175,7 +175,7 @@
                                                                 <td class="text-center" th:if="${stats.index==0}" th:rowspan="${bProcess.businessSteps.size()}">
                                                                     <a th:name="link" title="Run" th:id="'esegui_'+${bProcess.id}" style="vertical-align: middle"
                                                                        th:classappend="${#lists.isEmpty(paramsMissing.get(bProcess.id)) and #lists.isEmpty(variablesMissing.get(bProcess.id))} ? active : not-active"
-                                                                       th:onclick="'javascript:esegui(\'' +${dataProcessing.id} +'\',\''+${bProcess.id}+'\')'" href="javascript:void(0)" >
+                                                                       th:onclick="'javascript:esegui(\'' +${dataProcessing.id} +'\',\'' +${session.sessionBean.id} +'\',\''+${bProcess.id}+'\')'" href="javascript:void(0)" >
                                                                         <i class="fa fa-play" aria-hidden="true"></i> 
                                                                     </a>
                                                                 </td>
